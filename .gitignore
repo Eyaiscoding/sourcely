@@ -39,6 +39,7 @@ CHANGES.md
 *_REPORT.md
 SESSION_*.md
 .agents/
+*_Agent_Prompt.md
 
 # OS
 .DS_Store
