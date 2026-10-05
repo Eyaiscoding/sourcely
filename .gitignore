@@ -40,6 +40,7 @@ CHANGES.md
 SESSION_*.md
 .agents/
 *_Agent_Prompt.md
+OLLAMA_SETUP.md
 
 # OS
 .DS_Store
