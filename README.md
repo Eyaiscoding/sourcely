@@ -38,7 +38,7 @@ A production-grade documentation Q&A agent built with RAG (Retrieval-Augmented G
 
 | Component | Technology |
 |-----------|-----------|
-| **LLM** | Anthropic Claude 3.5 Sonnet |
+| **LLM** | Ollama (local, free - llama3.2) |
 | **Embeddings** | sentence-transformers (all-MiniLM-L6-v2) |
 | **Vector DB** | LanceDB (embedded) |
 | **Orchestration** | Apache Airflow |
@@ -80,7 +80,7 @@ User Question -> Embed -> Search LanceDB -> Retrieve Top-K -> Generate with Clau
 ### Required Accounts & Keys
 
 - **Azure Subscription**: For Blob Storage (free tier works)
-- **Anthropic API Key**: For Claude access
+- **Ollama**: Free local LLM (install from https://ollama.ai)
 - **GitHub Account**: For public repository hosting
 
 ## 🚀 Setup Instructions
@@ -103,8 +103,9 @@ Copy-Item .env.example .env
 Edit `.env` and add your credentials:
 
 ```env
-# LLM Configuration
-ANTHROPIC_API_KEY=sk-ant-...
+# LLM Configuration (FREE - using Ollama)
+OLLAMA_MODEL=llama3.2
+OLLAMA_BASE_URL=http://localhost:11434
 
 # Vector Database
 LANCEDB_PATH=./data/lancedb
@@ -192,7 +193,33 @@ This will:
 
 **Detailed instructions**: See [ingestion/README.md](ingestion/README.md)
 
-### 6. Run the Chat Interface
+### 6. Install and Start Ollama
+
+**Install Ollama** (free local LLM):
+
+**Windows:**
+1. Download from https://ollama.ai/download
+2. Run the installer
+3. Ollama will start automatically as a service
+
+**Verify installation:**
+```powershell
+ollama --version
+```
+
+**Pull a model** (llama3.2 recommended for speed, ~2GB):
+```powershell
+ollama pull llama3.2
+```
+
+**Alternative models:**
+- `llama3.1` - Larger, more capable (~4.7GB)
+- `mistral` - Fast and efficient (~4GB)
+- `gemma2` - Google's model (~5GB)
+
+Ollama runs automatically in the background on Windows.
+
+### 7. Run the Chat Interface
 
 Once the ingestion is complete, start the Streamlit app:
 
@@ -296,9 +323,11 @@ Week 1 has minimal testing (just manual verification). Automated tests coming in
 - Check that `LANCEDB_PATH` in `.env` points to the correct directory
 - Verify the Airflow DAG completed all 3 tasks
 
-### "ANTHROPIC_API_KEY not configured"
-- Add your API key to `.env`
-- Restart the Streamlit app
+### "Cannot connect to Ollama"
+- Install Ollama from https://ollama.ai/download
+- On Windows, Ollama runs automatically as a service
+- Verify it's running: `ollama list` should show installed models
+- Pull a model first: `ollama pull llama3.2`
 
 ### "Azure Storage connection failed"
 - Verify `AZURE_STORAGE_CONNECTION_STRING` in `.env`

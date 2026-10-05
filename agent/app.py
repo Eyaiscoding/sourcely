@@ -2,7 +2,7 @@
 Sourcely - Kubernetes Documentation Q&A Agent
 
 A minimal Streamlit chat interface for querying Kubernetes documentation
-using RAG (Retrieval-Augmented Generation) with LanceDB and Anthropic Claude.
+using RAG (Retrieval-Augmented Generation) with LanceDB and Ollama (local LLM).
 
 Week 1: Basic retrieval and generation, no citations or guardrails yet.
 """
@@ -15,13 +15,13 @@ from pathlib import Path
 # Add parent directory to path to import config
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from ingestion.config import ANTHROPIC_API_KEY, LANCEDB_PATH
+from ingestion.config import LANCEDB_PATH, OLLAMA_MODEL, OLLAMA_BASE_URL
 
 # Import dependencies
 try:
     import lancedb
     from sentence_transformers import SentenceTransformer
-    from anthropic import Anthropic
+    import requests
 except ImportError as e:
     st.error(f"Missing dependency: {e}. Please run: pip install -r requirements.txt")
     st.stop()
@@ -81,18 +81,15 @@ def retrieve_chunks(query: str, top_k: int = 5):
 
 def generate_answer(query: str, chunks: list) -> str:
     """
-    Generate an answer using Anthropic Claude.
+    Generate an answer using Ollama (local LLM).
     
     Args:
         query: User question
         chunks: Retrieved context chunks
     
     Returns:
-        Generated answer from Claude
+        Generated answer from Ollama
     """
-    if not ANTHROPIC_API_KEY:
-        return "ERROR: ANTHROPIC_API_KEY not configured. Please set it in your .env file."
-    
     # Construct context from retrieved chunks
     context_parts = []
     for i, chunk in enumerate(chunks, 1):
@@ -114,17 +111,24 @@ QUESTION: {query}
 
 ANSWER:"""
     
-    # Call Anthropic Claude API
+    # Call Ollama API
     try:
-        client = Anthropic(api_key=ANTHROPIC_API_KEY)
-        message = client.messages.create(
-            model="claude-3-5-sonnet-20241022",
-            max_tokens=1024,
-            messages=[
-                {"role": "user", "content": prompt}
-            ]
+        response = requests.post(
+            f"{OLLAMA_BASE_URL}/api/generate",
+            json={
+                "model": OLLAMA_MODEL,
+                "prompt": prompt,
+                "stream": False
+            },
+            timeout=60
         )
-        return message.content[0].text
+        
+        if response.status_code == 200:
+            return response.json()["response"]
+        else:
+            return f"ERROR: Ollama returned status {response.status_code}. Make sure Ollama is running."
+    except requests.exceptions.ConnectionError:
+        return "ERROR: Cannot connect to Ollama. Please install and start Ollama: https://ollama.ai"
     except Exception as e:
         return f"ERROR: Failed to generate answer: {str(e)}"
 
@@ -135,7 +139,7 @@ st.caption("Kubernetes Documentation Q&A Agent - Week 1")
 
 st.markdown("""
 Ask questions about Kubernetes! This system retrieves relevant documentation 
-and uses Claude to generate answers.
+and uses Ollama (local LLM) to generate answers.
 
 **Week 1 Status**: Basic retrieval and generation working. Citations and guardrails coming in Week 2.
 """)
@@ -193,4 +197,15 @@ with st.sidebar:
     st.markdown("**Corpus**: Kubernetes Documentation")
     st.markdown("**Vector DB**: LanceDB")
     st.markdown("**Embeddings**: all-MiniLM-L6-v2")
-    st.markdown("**LLM**: Claude 3.5 Sonnet")
+    st.markdown(f"**LLM**: Ollama ({OLLAMA_MODEL})")
+    
+    # Check Ollama status
+    try:
+        response = requests.get(f"{OLLAMA_BASE_URL}/api/tags", timeout=2)
+        if response.status_code == 200:
+            st.success("✅ Ollama connected")
+        else:
+            st.warning("⚠️ Ollama status unknown")
+    except:
+        st.error("❌ Ollama not running")
+        st.caption("Run: `ollama serve`")

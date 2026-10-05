@@ -12,8 +12,12 @@ project_root = Path(__file__).parent.parent
 dotenv_path = project_root / ".env"
 load_dotenv(dotenv_path=dotenv_path)
 
-# Anthropic API key for Claude
+# Anthropic API key for Claude (DEPRECATED - using Ollama instead)
 ANTHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY", "")
+
+# Ollama configuration (free local LLM)
+OLLAMA_MODEL = os.getenv("OLLAMA_MODEL", "llama3.2")
+OLLAMA_BASE_URL = os.getenv("OLLAMA_BASE_URL", "http://localhost:11434")
 
 # LanceDB path for vector storage
 LANCEDB_PATH = os.getenv("LANCEDB_PATH", "./lancedb_data")

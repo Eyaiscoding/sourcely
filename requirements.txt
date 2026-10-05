@@ -22,5 +22,5 @@ apache-airflow==2.8.1
 # Chat interface
 streamlit==1.30.0
 
-# LLM SDK
-anthropic==0.18.1
+# LLM SDK - Using Ollama (free, local) via requests
+# No additional SDK needed - using requests library (already included)

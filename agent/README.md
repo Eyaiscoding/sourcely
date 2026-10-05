@@ -6,7 +6,7 @@ The Streamlit chat interface for querying Kubernetes documentation using RAG.
 
 This interface provides a conversational Q&A experience for Kubernetes documentation:
 - **Retrieval**: Queries LanceDB for the top 5 most relevant chunks
-- **Generation**: Uses Anthropic Claude 3.5 Sonnet to generate answers
+- **Generation**: Uses Ollama (free local LLM) to generate answers
 - **UI**: Streamlit chat interface with message history
 
 ## Week 1 Status
@@ -26,8 +26,12 @@ This interface provides a conversational Q&A experience for Kubernetes documenta
 ## Prerequisites
 
 1. **Ingestion pipeline must be completed**: The LanceDB database at `LANCEDB_PATH` must exist with indexed documentation
-2. **Environment variables**: Ensure `.env` is configured with:
-   - `ANTHROPIC_API_KEY` - Your Anthropic API key
+2. **Ollama must be installed and running**: 
+   - Download from https://ollama.ai/download
+   - Pull a model: `ollama pull llama3.2`
+3. **Environment variables**: Ensure `.env` is configured with:
+   - `OLLAMA_MODEL` - Model name (default: llama3.2)
+   - `OLLAMA_BASE_URL` - Ollama API URL (default: http://localhost:11434)
    - `LANCEDB_PATH` - Path to LanceDB storage directory
 
 ## Running the Chat Interface
@@ -72,7 +76,7 @@ User Question
     ↓
 [Construct prompt with context]
     ↓
-[Generate answer with Claude 3.5 Sonnet]
+[Generate answer with Ollama (llama3.2)]
     ↓
 Display Answer
 ```
@@ -84,8 +88,16 @@ Display Answer
 - Verify `LANCEDB_PATH` in `.env` points to the correct directory
 
 ### "ANTHROPIC_API_KEY not configured"
-- Add your API key to `.env`: `ANTHROPIC_API_KEY=sk-ant-...`
+- **Not needed anymore!** We switched to Ollama (free local LLM)
+- Install Ollama: https://ollama.ai/download
+- Pull a model: `ollama pull llama3.2`
 - Restart the Streamlit app
+
+### "Cannot connect to Ollama"
+- Install Ollama from https://ollama.ai/download
+- Verify it's running: `ollama list`
+- Pull a model if you haven't: `ollama pull llama3.2`
+- Check the service is running (Windows: runs automatically as a service)
 
 ### "Missing dependency"
 - Install requirements: `pip install -r requirements.txt`
@@ -98,10 +110,11 @@ Display Answer
 ## Performance Notes
 
 - **First run**: Loading the embedding model and LanceDB table takes ~10-30 seconds
-- **Subsequent runs**: Models are cached, queries respond in ~2-5 seconds
+- **Subsequent runs**: Models are cached, queries respond in ~5-15 seconds
 - **Embedding latency**: ~100-200ms for query embedding
 - **Retrieval latency**: ~50-100ms for LanceDB search
-- **LLM latency**: ~1-3 seconds for Claude generation
+- **LLM latency**: ~2-10 seconds for Ollama generation (depends on model and hardware)
+- **Local LLM**: Runs on your machine (CPU or GPU), no API costs, complete privacy
 
 ## Next Steps (Week 2+)
 
