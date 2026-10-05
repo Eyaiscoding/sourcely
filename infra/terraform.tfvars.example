@@ -1,0 +1,14 @@
+# Azure Subscription Configuration
+subscription_id = "00000000-0000-0000-0000-000000000000"
+
+# Project Resource Group
+resource_group_name = "rg-sourcely-dev"
+location            = "eastus"
+
+# Corpus Storage Account (must be globally unique)
+storage_account_name = "stcsourcelydevXXXXX"
+
+# Terraform State Storage (must be manually bootstrapped first)
+state_resource_group        = "rg-terraform-state"
+state_storage_account_name  = "sttfstateXXXXX"
+state_container_name        = "tfstate"
