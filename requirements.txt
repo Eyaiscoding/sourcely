@@ -15,3 +15,12 @@ sentence-transformers==2.3.1
 # Vector DB and storage
 lancedb==0.4.3
 azure-storage-blob==12.19.0
+
+# Orchestration
+apache-airflow==2.8.1
+
+# Chat interface
+streamlit==1.30.0
+
+# LLM SDK
+anthropic==0.18.1
