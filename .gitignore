@@ -1,0 +1,51 @@
+# Environment variables
+.env
+
+# Terraform
+*.tfstate
+*.tfstate.backup
+.terraform/
+*.tfvars
+!*.tfvars.example
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+.venv/
+venv/
+env/
+ENV/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Agent artifacts (workflow outputs)
+*_SUMMARY.md
+*_NOTES.md
+CHANGES.md
+*_PROGRESS.md
+*_REPORT.md
+SESSION_*.md
+.agents/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# LanceDB
+*.lance/
