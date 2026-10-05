@@ -1,2 +1,17 @@
 # Environment configuration
 python-dotenv==1.0.0
+
+# Ingestion pipeline dependencies
+requests==2.31.0
+beautifulsoup4==4.12.3
+
+# ML dependencies - Note: Python 3.13 has compatibility issues with torch/torchvision
+# If you encounter import errors, consider using Python 3.11 or 3.12
+# or install with: pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu
+torch>=2.0.0
+torchvision>=0.15.0
+sentence-transformers==2.3.1
+
+# Vector DB and storage
+lancedb==0.4.3
+azure-storage-blob==12.19.0
